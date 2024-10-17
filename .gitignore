@@ -1,0 +1,4 @@
+/node_modules
+/artifacts/build-info
+/cache
+/ignition/deployments/chain-31337

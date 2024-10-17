@@ -45,7 +45,7 @@ contract MedicalDataAccess {
     function revokeDoctorAuthorization(address doctor) public {
         require(isPatient(msg.sender), "Only patients can revoke authorization");
         require(isDoctor(doctor), "This is not a registered doctor");
-        require(isDoctorAuthorized(msg.sender, doctor), "Doctor didn´t have autorization");
+        require(isDoctorAuthorized(msg.sender, doctor), "Doctor didnt have autorization");
         patientToAuthorizedDoctors[msg.sender][doctor] = false;
         emit AccessRevoked(msg.sender, doctor);
     }
