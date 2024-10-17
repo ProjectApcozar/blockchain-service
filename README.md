@@ -1,5 +1,14 @@
 # blockchain-service
-Try contract in Remix.
+LOCALHOST:
+npm install
 
-Validación de direcciones de doctores
-Actualmente, cualquier dirección puede ser autorizada como doctor. Si tienes un sistema para verificar doctores (por ejemplo, un registro centralizado o una lista de direcciones aprobadas), deberías integrarlo para asegurarte de que solo doctores válidos puedan acceder a los datos.
+1. Compilar contrato:
+$ npx hardhat compile
+
+2. Iniciar nodo local hardhat:
+npx hardhat node
+
+3. Desplegar contrato:
+npx hardhat ignition deploy ./ignition/modules/MedicalDataAccess.js --network localhost
+4. Setear private key y dirección del contrato desplegado en service.js y:
+node service.js
