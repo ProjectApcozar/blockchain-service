@@ -13,7 +13,6 @@ app.use(bodyParser.json());
 const provider = new ethers.JsonRpcProvider('http://localhost:8545');
 
 // Usar una cuenta generada por Hardhat (reemplaza con una clave privada de tu nodo local)
-
 const privateKey = "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e";
 const wallet = new ethers.Wallet(privateKey, provider);
 
