@@ -5,10 +5,24 @@ contract MedicalDataAccess {
 
     mapping(address => bool) private patients;
     mapping(address => bool) private doctors;
-    mapping(address => mapping(address => bool)) private patientToAuthorizedDoctors;
 
     event AccessGranted(address indexed patient, address indexed doctor);
     event AccessRevoked(address indexed patient, address indexed doctor);
+
+    error PatientAlreadyRegistered();
+    error DoctorAlreadyRegistered();
+    error NotAPatient();
+    error NotADoctor();
+
+    function removePatient(address patient) public {
+        if(!isPatient(patient)) revert NotAPatient();
+        patients[patient] = false;
+    }
+
+    function removeDoctor(address doctor) public {
+        if(!isDoctor(doctor)) revert NotADoctor();
+        doctors[doctor] = false;
+    }
 
     function isPatient(address patient) public view returns (bool) {
         return patients[patient];
@@ -18,35 +32,25 @@ contract MedicalDataAccess {
         return doctors[doctor];
     }
 
-    function isDoctorAuthorized(address patient, address doctor) public view returns (bool) {
-        require(isPatient(patient), "This is not a registered patient");
-        require(isDoctor(doctor), "This is not a registered doctor");
-        require(isPatient(msg.sender) || isDoctor(msg.sender), "Denied access");
-        return patientToAuthorizedDoctors[patient][doctor];
-    }
-
     function registerPatient() public {
-        require(!isPatient(msg.sender), "Patient already registered");
+        if (isPatient(msg.sender)) revert PatientAlreadyRegistered();
         patients[msg.sender] = true;
     }
 
     function registerDoctor(address doctor) public {
-        require(!isDoctor(doctor), "Doctor already registered");
+        if(isDoctor(doctor)) revert DoctorAlreadyRegistered();
         doctors[doctor] = true;
     }
 
     function authorizeDoctor(address doctor) public {
-        require(isPatient(msg.sender), "Only patients can authorize doctors");
-        require(isDoctor(doctor), "This is not a registered doctor");
-        patientToAuthorizedDoctors[msg.sender][doctor] = true;
+        if(!isPatient(msg.sender)) revert NotAPatient();
+        if(!isDoctor(doctor)) revert NotADoctor();
         emit AccessGranted(msg.sender, doctor);
     }
 
     function revokeDoctorAuthorization(address doctor) public {
-        require(isPatient(msg.sender), "Only patients can revoke authorization");
-        require(isDoctor(doctor), "This is not a registered doctor");
-        require(isDoctorAuthorized(msg.sender, doctor), "Doctor didnt have autorization");
-        patientToAuthorizedDoctors[msg.sender][doctor] = false;
+        if(!isPatient(msg.sender)) revert NotAPatient();
+        if(!isDoctor(doctor)) revert NotADoctor();
         emit AccessRevoked(msg.sender, doctor);
     }
 }
