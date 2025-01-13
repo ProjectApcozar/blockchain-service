@@ -8,6 +8,7 @@ contract MedicalDataAccess {
 
     event AccessGranted(address indexed patient, address indexed doctor);
     event AccessRevoked(address indexed patient, address indexed doctor);
+    event AccessRequest(address indexed patient, address indexed doctor);
 
     error PatientAlreadyRegistered();
     error DoctorAlreadyRegistered();
@@ -32,9 +33,14 @@ contract MedicalDataAccess {
         return doctors[doctor];
     }
 
-    function registerPatient() public {
+    function registerPatientSelf() public {
         if (isPatient(msg.sender)) revert PatientAlreadyRegistered();
         patients[msg.sender] = true;
+    }
+
+    function registerPatient(address patient) public {
+        if (isPatient(patient)) revert PatientAlreadyRegistered();
+        patients[patient] = true;
     }
 
     function registerDoctor(address doctor) public {
@@ -52,5 +58,11 @@ contract MedicalDataAccess {
         if(!isPatient(msg.sender)) revert NotAPatient();
         if(!isDoctor(doctor)) revert NotADoctor();
         emit AccessRevoked(msg.sender, doctor);
+    }
+
+    function requestAccess(address patient) public {
+        if(!isPatient(patient)) revert NotAPatient();
+        if(!isDoctor(msg.sender)) revert NotADoctor();
+        emit AccessRequest(patient, msg.sender);
     }
 }
